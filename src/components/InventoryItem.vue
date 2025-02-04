@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useInventoryStore } from '@/stores/inventoryStore';
-import { InventoryItem } from '@/stores/inventoryStore';
+import { useInventoryStore, type InventoryItem } from '../stores/inventoryStore';  // Импортируем store для работы с инвентарем
+ 
 
 const props = defineProps<{ item: InventoryItem }>();
 const store = useInventoryStore();
 const isDragging = ref(false);
 
-const cellSize = 100;  // Размер ячейки
+const cellSize = 150;  // Размер ячейки
 
 const onDragStart = (event: DragEvent) => {
   isDragging.value = true;
@@ -54,8 +54,8 @@ const onDragEnd = (event: DragEvent) => {
 <style lang="scss" scoped>
 .inventory-item {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 150px;
+  height: 150px;
   padding: 10px;
   border-radius: 8px;
   color: white;

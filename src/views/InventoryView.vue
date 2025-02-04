@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useInventoryStore } from '@/stores/inventoryStore'; // Импортируем store для работы с инвентарем
-import InventoryList from '@/components/InventoryList.vue'; // Импортируем компонент для отображения списка предметов
+import { useInventoryStore } from '../stores/inventoryStore'; // Импортируем store для работы с инвентарем
+import InventoryList from '../components/InventoryList.vue'; // Импортируем компонент для отображения списка предметов
 
 const store = useInventoryStore(); // Получаем доступ к store
 
@@ -36,6 +36,7 @@ const addItem = () => {
     <form @submit.prevent="addItem">
       <input v-model="newItem.name" placeholder="Название" required />
       <input v-model="newItem.description" placeholder="Описание" required />
+      <input v-model="newItem.color" type="color" /> <!-- Поле для выбора цвета -->
       <button type="submit">Добавить предмет</button>
     </form>
 

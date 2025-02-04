@@ -1,25 +1,40 @@
 <script setup lang="ts">
-import { useInventoryStore } from '@/stores/inventoryStore';
+
+import { useInventoryStore } from '../stores/inventoryStore';
 import InventoryItem from './InventoryItem.vue';
+import { ref } from 'vue';
 
 const store = useInventoryStore();
 const gridSize = 5;  // Количество ячеек в сетке по одной оси (5x5)
-const cellSize = 100;  // Размер каждой ячейки (в пикселях)
+const cellSize = 150;  // Размер каждой ячейки (в пикселях)
+
+
+// ref для контейнера
+const containerRef = ref<HTMLElement | null>(null);
 
 const onDrop = (event: DragEvent) => {
   event.preventDefault();
   const itemId = event.dataTransfer?.getData('text/plain');
-  if (!itemId) return;
+  if (!itemId || !containerRef.value) return;
 
   const item = store.items.find(i => i.id === itemId);
   if (item) {
-    // Находим ближайшую ячейку для предмета
-    const x = Math.floor(event.clientX / cellSize) * cellSize;
-    const y = Math.floor(event.clientY / cellSize) * cellSize;
+    // Получаем границы контейнера
+    const rect = containerRef.value.getBoundingClientRect();
 
+    // Корректируем координаты относительно контейнера
+    const relativeX = event.clientX - rect.left;
+    const relativeY = event.clientY - rect.top;
+
+    // Вычисляем координаты для выравнивания по сетке (в центре ячейки)
+    const x = Math.floor(relativeX / cellSize) * cellSize + (cellSize - 120) / 2;
+    const y = Math.floor(relativeY / cellSize) * cellSize + (cellSize - 120) / 2;
+
+    // Обновляем позицию предмета
     item.position.x = x;
     item.position.y = y;
 
+    // Сохраняем данные
     store.saveToLocalStorage();
   }
 };
@@ -30,12 +45,14 @@ const allowDrop = (event: DragEvent) => {
 </script>
 
 <template>
-  <div
-    class="inventory-container"
-    @dragover="allowDrop"
-    @drop="onDrop"
-    :style="{ width: gridSize * cellSize + 'px', height: gridSize * cellSize + 'px' }"
-  >
+ <div
+  ref="containerRef"  
+  class="inventory-container"
+  @dragover="allowDrop"
+  @drop="onDrop"
+  :style="{ width: gridSize * cellSize + 'px', height: gridSize * cellSize + 'px' }"
+>
+
     <!-- Сетка -->
     <div
       v-for="row in gridSize"
@@ -63,7 +80,7 @@ const allowDrop = (event: DragEvent) => {
 <style lang="scss" scoped>
 .inventory-container {
   position: relative;
-  border: 2px dashed #ccc;
+  border: 4px dashed #ccc;
   display: flex;
   flex-wrap: wrap;
 }
@@ -73,7 +90,7 @@ const allowDrop = (event: DragEvent) => {
 }
 
 .grid-cell {
-  border: 1px solid #ddd;
+  border: 3px solid #ddd;
   box-sizing: border-box;
   background-color: #f9f9f9;
 }
@@ -85,8 +102,8 @@ const allowDrop = (event: DragEvent) => {
 
 .inventory-item {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   padding: 10px;
   border-radius: 8px;
   color: rgb(35, 215, 19);

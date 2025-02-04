@@ -6,7 +6,9 @@ export interface InventoryItem {
   description: string;
   position: { x: number; y: number };
   zIndex: number;
+  color: string; // Добавляем цвет
 }
+
 
 export const useInventoryStore = defineStore('inventory', {
   state: () => ({
